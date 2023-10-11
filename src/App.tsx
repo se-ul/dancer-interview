@@ -1,9 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 import { Camera } from "./components/Camera";
+import { useInterviewAI } from "./hooks/useInterviewAI";
 import { useSpeech } from "./hooks/useSpeech";
 
 export const App: React.FC = () => {
-  const [text, setText] = useState<string>("");
+  const { messages, submitAnswer } = useInterviewAI();
+  const [answer, setAnswer] = useState<string>("");
   const lastUpdatedTimeRef = useRef<number>(Date.now());
   const lastExpressionRef = useRef<string>("");
   const expressionDurationMapRef = useRef<Record<string, number>>({});
@@ -24,7 +26,7 @@ export const App: React.FC = () => {
   }, []);
 
   useSpeech((result) => {
-    setText(result);
+    setAnswer(result);
   });
 
   return (
@@ -34,7 +36,20 @@ export const App: React.FC = () => {
         className="flex-1 self-center"
         onExpressionDetection={handleExpressionDetection}
       />
-      <div className="flex-1 self-center">{text}</div>
+      <div className="flex-1 self-center">{answer}</div>
+      <button
+        onClick={() => {
+          void submitAnswer(answer);
+        }}
+      >
+        답변하기
+      </button>
+      {messages.slice(1).map((message, index) => (
+        <div key={index}>
+          <div>{message.role}</div>
+          <div>{message.content}</div>
+        </div>
+      ))}
     </main>
   );
 };
