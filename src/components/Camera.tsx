@@ -22,13 +22,13 @@ export const Camera: React.FC<CameraProps> = ({
     }
 
     void (async function () {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoElement.srcObject = stream;
-
       await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
       await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
       await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
       await faceapi.nets.faceExpressionNet.loadFromUri("/models");
+
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoElement.srcObject = stream;
     })();
   }, []);
 
