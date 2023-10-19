@@ -25,8 +25,14 @@ export function useSpeech(onResult: (result: string) => void) {
       console.log("nomatch");
     };
     speechRecognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-      onResult(transcript);
+      try {
+        const transcript = event.results
+          .map((result) => result[0].transcript)
+          .join(" ");
+        onResult(transcript);
+      } catch {
+        // ignore
+      }
     };
     speechRecognition.onerror = (event) => {
       console.log("speech recognition error:", event.error);
