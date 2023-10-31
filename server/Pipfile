@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+mediapy = "*"
+matplotlib = "*"
+tensorflow = "*"
+tensorflow-hub = "*"
+tensorflow-docs = "*"
+opencv-python = "*"
+imageio = "*"
+opencv-python-headless = "<4.3"
+tqdm = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
+python_full_version = "3.9.10"
