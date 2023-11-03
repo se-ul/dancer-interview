@@ -11,6 +11,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import tqdm
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 # mpl.rcParams.update({
 #     'font.size': 10,
@@ -161,6 +162,7 @@ threading.Thread(target=process_frames_loop, args=(cap,)).start()
 
 # Start server
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/current')
 def current():
