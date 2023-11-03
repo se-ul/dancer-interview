@@ -13,6 +13,7 @@ opencv-python = "*"
 imageio = "*"
 opencv-python-headless = "<4.3"
 tqdm = "*"
+flask = "*"
 
 [dev-packages]
 

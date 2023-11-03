@@ -1,4 +1,3 @@
-# Import libraries
 import pathlib
 import threading
 
@@ -11,10 +10,11 @@ import PIL
 import tensorflow as tf
 import tensorflow_hub as hub
 import tqdm
+from flask import Flask, jsonify
 
-mpl.rcParams.update({
-    'font.size': 10,
-})
+# mpl.rcParams.update({
+#     'font.size': 10,
+# })
 
 
 labels_path = tf.keras.utils.get_file(
@@ -46,6 +46,15 @@ dance_labels = {
     "robot dancing", "salsa dancing", "square dancing", "swing dancing",
     "tango dancing", "tap dancing", "zumba", "beatboxing", "headbanging", "spinning poi"
 }
+
+def get_dance_probability(probs, label_map=KINETICS_600_LABELS):
+  # Ensure label_map is a list
+  label_map = list(label_map)
+
+  # Combine probabilities for dance labels
+  dance_probability = tf.reduce_sum([probs[label_map.index(label)] for label in dance_labels if label in label_map], axis=0)
+
+  return dance_probability.numpy().item()
 
 # Get top_k labels and probabilities
 def get_top_k(probs, k=5, label_map=KINETICS_600_LABELS):
@@ -98,11 +107,17 @@ def prepare_frames_for_model(frames):
   frames_np_expanded = np.expand_dims(frames_np, axis=0)
   
   return frames_np_expanded
+      
+      
+frame_limit = 5
+fps = 3
 
-is_processing = False
+frames = []
+
+result = -1
 
 def process_frames(frames):
-  global is_processing
+  global result
   
   # 복사하여 메인 스레드에서의 변경에 영향을 받지 않게 합니다.
   local_frames = list(frames)
@@ -110,29 +125,15 @@ def process_frames(frames):
   # 프레임 준비
   frames_ready_for_model = prepare_frames_for_model(local_frames)
   
-  # image_np = tf.image.resize(image_np, (224, 224))
-  # image_np = tf.cast(image_np, tf.float32) / 255
-
-  # image_np_expanded = tf.expand_dims(image_np, axis=0)
-  # image_np_expanded = tf.expand_dims(image_np_expanded, axis=1)
-  
   logits = sig(image=frames_ready_for_model)
   logits = logits['classifier_head'][0]
-  
-  print('\n\n\n\n--------------------------------')
+
   probs = tf.nn.softmax(logits, axis=-1)
-
-  for label, p in get_top_k(probs):
-    print(f'{label:20s}: {p:.3f}')
   
-  is_processing = False
+  result = get_dance_probability(probs)
 
-      
-      
-frames = []
-
-frame_limit = 5
-fps = 3
+  # for label, p in get_top_k(probs):
+  #   print(f'{label:20s}: {p:.3f}')
 
 def grab_frames(cap):
     while True:
@@ -157,12 +158,23 @@ cap.set(cv2.CAP_PROP_FPS, fps)
 threading.Thread(target=grab_frames, args=(cap,)).start()
 threading.Thread(target=process_frames_loop, args=(cap,)).start()
 
-while True:
-  ret, frame = cap.read()
-  cv2.imshow('Webcam', frame)
+
+# Start server
+app = Flask(__name__)
+
+@app.route('/current')
+def current():
+    return jsonify({'result': result})
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', port=4001, debug=True)
+
+# while True:
+#   ret, frame = cap.read()
+#   cv2.imshow('Webcam', frame)
   
-  if cv2.waitKey(1) & 0xFF == ord('q'):
-    break  
+#   if cv2.waitKey(1) & 0xFF == ord('q'):
+#     break  
 
 cap.release()
 cv2.destroyAllWindows()
