@@ -1,11 +1,9 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Camera } from "./components/Camera";
-import { useInterviewAI } from "./hooks/useInterviewAI";
-import { useSpeech } from "./hooks/useSpeech";
 
 export const App: React.FC = () => {
-  const { messages, submitAnswer } = useInterviewAI();
-  const [answer, setAnswer] = useState<string>("");
+  // const { messages, submitAnswer } = useInterviewAI();
+  // const [answer, setAnswer] = useState<string>("");
   const lastUpdatedTimeRef = useRef<number>(Date.now());
   const lastExpressionRef = useRef<string>("");
   const expressionDurationMapRef = useRef<Record<string, number>>({});
@@ -25,9 +23,9 @@ export const App: React.FC = () => {
     lastUpdatedTimeRef.current = currentTime;
   }, []);
 
-  useSpeech((result) => {
-    setAnswer(result);
-  });
+  // useSpeech((result) => {
+  //   setAnswer(result);
+  // });
 
   return (
     <main className="h-full flex flex-col space-y-4 py-8">
@@ -36,7 +34,7 @@ export const App: React.FC = () => {
         className="flex-1 self-center"
         onExpressionDetection={handleExpressionDetection}
       />
-      <div className="flex-1 self-center">{answer}</div>
+      {/* <div className="flex-1 self-center">{answer}</div>
       <button
         onClick={() => {
           void submitAnswer(answer);
@@ -49,7 +47,7 @@ export const App: React.FC = () => {
           <div>{message.role}</div>
           <div>{message.content}</div>
         </div>
-      ))}
+      ))} */}
     </main>
   );
 };
