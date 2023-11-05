@@ -45,7 +45,11 @@ dance_labels = {
     "dancing gangnam style", "dancing macarena", "jumpstyle dancing",
     "krumping", "moon walking", "mosh pit dancing", "pirouetting",
     "robot dancing", "salsa dancing", "square dancing", "swing dancing",
-    "tango dancing", "tap dancing", "zumba", "beatboxing", "headbanging", "spinning poi"
+    "tango dancing", "tap dancing", "zumba", "beatboxing", "headbanging", "spinning poi", "yoga", "tai chi"
+}
+
+deprived_labels = {
+    "tai chi"
 }
 
 def get_dance_probability(probs, label_map=KINETICS_600_LABELS):
@@ -56,6 +60,15 @@ def get_dance_probability(probs, label_map=KINETICS_600_LABELS):
   dance_probability = tf.reduce_sum([probs[label_map.index(label)] for label in dance_labels if label in label_map], axis=0)
 
   return dance_probability.numpy().item()
+
+def get_deprived_probability(probs, label_map=KINETICS_600_LABELS):
+  # Ensure label_map is a list
+  label_map = list(label_map)
+
+# Combine probabilities for dance labels
+  deprived_probability = tf.reduce_sum([probs[label_map.index(label)] for label in deprived_labels if label in label_map], axis=0)
+
+  return deprived_probability.numpy().item()
 
 # Get top_k labels and probabilities
 def get_top_k(probs, k=5, label_map=KINETICS_600_LABELS):
@@ -111,7 +124,7 @@ def prepare_frames_for_model(frames):
       
       
 frame_limit = 5
-fps = 3
+fps = 12
 
 frames = []
 
@@ -131,10 +144,13 @@ def process_frames(frames):
 
   probs = tf.nn.softmax(logits, axis=-1)
   
-  result = get_dance_probability(probs)
+  dance = get_dance_probability(probs)
+  deprived = 0 # get_deprived_probability(probs);
+  result = dance * (1 / (1 - deprived))
 
-  # for label, p in get_top_k(probs):
-  #   print(f'{label:20s}: {p:.3f}')
+  print('\n\n\n\n\n\n\n\n\n\n------------------------------------------')
+  for label, p in get_top_k(probs):
+    print(f'{label:20s}: {p:.3f}')
 
 def grab_frames(cap):
     while True:
