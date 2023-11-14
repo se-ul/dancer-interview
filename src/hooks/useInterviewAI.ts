@@ -1,26 +1,24 @@
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { InterviewAI } from "../modules/InterviewAI";
 
-export function useInterviewAI() {
-  const interviewAIRef = useRef<InterviewAI>(new InterviewAI());
-  const [messages, setMessages] = useState(interviewAIRef.current.messages);
+const interviewAI = new InterviewAI();
 
-  useEffect(() => {
-    const onMessagesChange = (messages: ChatCompletionMessageParam[]) => {
-      setMessages(messages);
-    };
-    const interviewAI = interviewAIRef.current;
-    interviewAI.addOnMessagesChangeListener(onMessagesChange);
-    return () => {
-      interviewAI.removeOnMessagesChangeListener(onMessagesChange);
-    };
+export function useInterviewAI() {
+  const [messages, setMessages] = useState(interviewAI.messages);
+
+  const submitAnswer = useCallback((answer: string) => {
+    interviewAI
+      .submitAnswer(answer)
+      .then(() => {
+        setMessages([...interviewAI.messages]);
+      })
+      .catch(() => {
+        // Do nothing
+      });
   }, []);
 
   return {
     messages,
-    submitAnswer: interviewAIRef.current.submitAnswer.bind(
-      interviewAIRef.current
-    ),
+    submitAnswer,
   };
 }
