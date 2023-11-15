@@ -1,5 +1,6 @@
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import "@tensorflow/tfjs-backend-webgl";
+import { ready } from "@tensorflow/tfjs-core";
 import { cx } from "cva";
 import { useCallback, useEffect, useRef } from "react";
 
@@ -20,6 +21,7 @@ export const PoseCamera: React.FC<PoseCameraProps> = ({ className }) => {
     }
 
     void (async function () {
+      await ready();
       if (poseDetectorRef.current === undefined) {
         const detectorConfig = {
           modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
@@ -57,6 +59,7 @@ export const PoseCamera: React.FC<PoseCameraProps> = ({ className }) => {
         return;
       }
 
+      await ready();
       const poseDetections = await poseDetectorRef.current.estimatePoses(
         videoRef.current
       );

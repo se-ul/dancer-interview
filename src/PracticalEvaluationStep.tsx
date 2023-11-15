@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PoseCamera } from "./components/PoseCamera";
 import { useInterval } from "./hooks/useInterval";
 import { getDanceProbability } from "./utils/getDanceProbability ";
+import { scoreToColor } from "./utils/scoreToColor";
 
 export const PracticalEvaluationStep: React.FC = () => {
   const [currentDanceProbability, setCurrentDanceProbability] = useState(-1);
@@ -20,9 +21,7 @@ export const PracticalEvaluationStep: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   useInterval(refreshDanceProbability, 600);
 
-  const tintColor = `rgba(${Math.floor(
-    255 - currentDanceProbability * 255
-  )},${Math.floor(currentDanceProbability * 255)},0,1)`;
+  const tintColor = scoreToColor(currentDanceProbability * 100);
   const resultScore = score * 100;
 
   return (
@@ -33,7 +32,7 @@ export const PracticalEvaluationStep: React.FC = () => {
           style={{
             width: 640,
             height: 480,
-            border: `1px solid ${tintColor}`,
+            border: `5px solid ${tintColor}`,
           }}
         >
           <PoseCamera className="flex-1 self-center" />
@@ -63,3 +62,5 @@ export const PracticalEvaluationStep: React.FC = () => {
     </main>
   );
 };
+
+export default PracticalEvaluationStep;

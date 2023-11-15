@@ -57,6 +57,9 @@ export const InterviewStep: React.FC = () => {
           onExpressionDetection={handleExpressionDetection}
         />
       </div>
+      <p className="mt-12 max-w-4xl text-3xl break-keep">
+        (AI) {assistantMessage}
+      </p>
       <form
         className="flex flex-row space-x-4"
         onSubmit={(event) => {
@@ -75,10 +78,9 @@ export const InterviewStep: React.FC = () => {
         />
         <button type="submit">답변하기</button>
       </form>
-      <p className="mt-12 max-w-4xl text-3xl break-keep">
-        (AI) {assistantMessage}
-      </p>
       <audio ref={audioRef} className="hidden"></audio>
     </main>
   );
 };
+
+export default InterviewStep;

@@ -1,16 +1,12 @@
-import { useState } from "react";
-import { InterviewStep } from "./InterviewStep";
-import { PracticalEvaluationStep } from "./PracticalEvaluationStep";
-import { useKeyPress } from "./hooks/useKeyPress";
+import { lazy } from "react";
+
+const PracticalEvaluationStep = lazy(() => import("./PracticalEvaluationStep"));
+const InterviewStep = lazy(() => import("./InterviewStep"));
 
 export const App: React.FC = () => {
-  const [step, setStep] = useState("practical_evaluation");
+  const isPracticalEvaluation = window.location.search.includes("practical");
 
-  useKeyPress("-", () => {
-    setStep("interview");
-  });
-
-  return step === "practical_evaluation" ? (
+  return isPracticalEvaluation ? (
     <PracticalEvaluationStep />
   ) : (
     <InterviewStep />
