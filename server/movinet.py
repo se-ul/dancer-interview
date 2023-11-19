@@ -45,11 +45,11 @@ dance_labels = {
     "dancing gangnam style", "dancing macarena", "jumpstyle dancing",
     "krumping", "moon walking", "mosh pit dancing", "pirouetting",
     "robot dancing", "salsa dancing", "square dancing", "swing dancing",
-    "tango dancing", "tap dancing", "zumba", "beatboxing", "headbanging", "spinning poi", "yoga", "tai chi"
+    "tango dancing", "tap dancing", "zumba", "beatboxing", "headbanging", "spinning poi", "yoga", "tai chi", "acting in play"
 }
 
 deprived_labels = {
-    "tai chi"
+    "contact juggling"
 }
 
 def get_dance_probability(probs, label_map=KINETICS_600_LABELS):
@@ -145,8 +145,9 @@ def process_frames(frames):
   probs = tf.nn.softmax(logits, axis=-1)
   
   dance = get_dance_probability(probs)
-  deprived = 0 # get_deprived_probability(probs);
+  deprived = get_deprived_probability(probs);
   result = dance * (1 / (1 - deprived))
+  print(dance, deprived, result)
 
   print('\n\n\n\n\n\n\n\n\n\n------------------------------------------')
   for label, p in get_top_k(probs):
@@ -159,8 +160,9 @@ def grab_frames(cap):
             print("Failed to grab frame")
             break
 
-        if len(frames) >= frame_limit:
+        if len(frames) > frame_limit:
             frames.pop(0)
+
         frame_resized = cv2.resize(frame, (224, 224))
         frames.append(frame_resized)
 
@@ -187,12 +189,12 @@ def current():
 if __name__ == '__main__':
     app.run('0.0.0.0', port=4001, debug=True)
 
-# while True:
-#   ret, frame = cap.read()
-#   cv2.imshow('Webcam', frame)
+while True:
+  ret, frame = cap.read()
+  cv2.imshow('Webcam', frames[-1])
   
-#   if cv2.waitKey(1) & 0xFF == ord('q'):
-#     break  
+  if cv2.waitKey(1) & 0xFF == ord('q'):
+    break  
 
 cap.release()
 cv2.destroyAllWindows()
