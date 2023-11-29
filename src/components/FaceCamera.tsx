@@ -66,7 +66,17 @@ export const FaceCamera: React.FC<FaceCameraProps> = ({
         const expressions = detection.expressions;
         const topExpression = expressions.asSortedArray()[0];
 
-        const text = `${topExpression.expression} ${Math.floor(
+        const expressionText =
+          {
+            neutral: "중립",
+            happy: "긍정",
+            sad: "부정",
+            angry: "부정",
+            fearful: "부정",
+            disgusted: "부정",
+            surprised: "부정",
+          }[topExpression.expression] ?? "rgba(255, 255, 255, 0.7)";
+        const text = `${expressionText} ${Math.floor(
           topExpression.probability * 100
         )}%`;
         const color =

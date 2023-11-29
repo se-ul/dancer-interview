@@ -1,10 +1,25 @@
+import { cva } from "cva";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaceCamera } from "./components/FaceCamera";
 import { useInterviewAI } from "./hooks/useInterviewAI";
 import { generateSpeechMP3 } from "./utils/generateSpeechMP3";
 
+const caption = cva({
+  base: "max-w-4xl text-3xl break-keep",
+  variants: {
+    type: {
+      default: "mt-12",
+      longText: "absolute bottom-20 bg-black bg-opacity-70",
+    },
+  },
+  defaultVariants: {
+    type: "default",
+  },
+});
+
 export const InterviewStep: React.FC = () => {
   const { messages, submitAnswer } = useInterviewAI();
+  const [lastAnswer, setLastAnswer] = useState<string>("");
   const [answer, setAnswer] = useState<string>("");
   const lastUpdatedTimeRef = useRef<number>(Date.now());
   const lastExpressionRef = useRef<string>("");
@@ -51,32 +66,41 @@ export const InterviewStep: React.FC = () => {
 
   return (
     <main className="h-full flex flex-col items-center space-y-4 py-8">
+      <h1 className="text-3xl mb-1">수험번호: 87</h1>
       <div className="flex flex-col space-y-4">
         <FaceCamera
           className="flex-1 self-center"
           onExpressionDetection={handleExpressionDetection}
         />
       </div>
-      <p className="mt-12 max-w-4xl text-3xl break-keep">
-        (AI) {assistantMessage}
+      <p
+        className={caption({
+          type: assistantMessage.length > 150 ? "longText" : "default",
+        })}
+      >
+        {assistantMessage && `(면접관) ${assistantMessage}`}
       </p>
       <form
-        className="flex flex-row space-x-4"
+        className="absolute bottom-0 left-0 flex flex-row space-x-4"
         onSubmit={(event) => {
           event.preventDefault();
-          submitAnswer(answer);
-          setAnswer("");
+          if (answer === "") {
+            submitAnswer(lastAnswer);
+          } else {
+            submitAnswer(answer);
+            setLastAnswer(answer);
+            setAnswer("");
+          }
         }}
       >
         <input
-          className="flex-1 self-center text-black"
+          className="flex-1 self-center outline-none caret-gray-400 bg-black text-gray-600"
           type="text"
           value={answer}
           onChange={(event) => {
             setAnswer(event.target.value);
           }}
         />
-        <button type="submit">답변하기</button>
       </form>
       <audio ref={audioRef} className="hidden"></audio>
     </main>

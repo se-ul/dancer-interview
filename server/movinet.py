@@ -189,12 +189,12 @@ def current():
 if __name__ == '__main__':
     app.run('0.0.0.0', port=4001, debug=True)
 
-while True:
-  ret, frame = cap.read()
-  cv2.imshow('Webcam', frames[-1])
+# while True:
+#   ret, frame = cap.read()
+#   cv2.imshow('Webcam', frames[-1])
   
-  if cv2.waitKey(1) & 0xFF == ord('q'):
-    break  
+#   if cv2.waitKey(1) & 0xFF == ord('q'):
+#     break  
 
 cap.release()
 cv2.destroyAllWindows()

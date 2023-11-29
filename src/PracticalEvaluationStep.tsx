@@ -26,6 +26,7 @@ export const PracticalEvaluationStep: React.FC = () => {
 
   return (
     <main className="h-full flex flex-col items-center space-y-4 py-8">
+      <h1 className="text-3xl mb-1">수험번호: 87</h1>
       <div className="flex flex-col space-y-4">
         <div
           className="relative"
